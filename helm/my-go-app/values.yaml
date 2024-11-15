@@ -1,0 +1,9 @@
+
+replicaCount: 2
+
+image:
+  repository: queensley/my-go-app
+  tag: "v1"
+  pullPolicy: Always
+
+
