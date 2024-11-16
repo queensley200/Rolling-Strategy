@@ -53,7 +53,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ env.SHORT_SHA }}
-          build-args: --no-cache
+          
 
   deploy:
     name: Update Helm Values
