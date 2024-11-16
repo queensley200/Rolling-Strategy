@@ -48,7 +48,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ github.sha::7 }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ github.sha | slice(0, 7) }}
           build-args: --no-cache
 
   deploy:
@@ -69,12 +69,12 @@ jobs:
           cd helm
           cd my-go-app-chart
           yq eval '.image.repository = "${{ secrets.DOCKERHUB_USERNAME }}/my-go-app"' -i values.yaml
-          yq eval '.image.tag = "${{ github.sha::7 }}"' -i values.yaml
+          yq eval '.image.tag = "${{ github.sha | slice(0, 7) }}"' -i values.yaml
 
       - name: Commit and push updated values
         run: |
           git config --global user.name 'queensley200'
           git config --global user.email 'kissesndhuggz@gmail.com'
           git add helm/my-go-app-chart/values.yaml
-          git commit -m "Update image tag to ${{ github.sha::7 }}"
+          git commit -m "Update image tag to ${{ github.sha | slice(0, 7) }}"
           git push
