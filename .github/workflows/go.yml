@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
       - '**.md'
       - 'helm/**'
@@ -33,6 +33,7 @@ jobs:
     name: Build and Push Docker Image
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -42,23 +43,27 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-         
+
       - name: Set short SHA
         id: vars
-        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+        run: |
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
           
+      - name: Debug SHORT_SHA
+        run: echo "SHORT_SHA=${{ env.SHORT_SHA }}"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ env.SHORT_SHA }}
-          
 
   deploy:
     name: Update Helm Values
     needs: push
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -71,8 +76,11 @@ jobs:
       - name: Update Helm values
         run: |
           cd helm/my-go-app-chart
-          yq eval '.image.repository = "queensley/my-go-app"' -i values.yaml
-          yq eval '.image.tag = "${{ env.SHORT_SHA }}"' -i values.yaml
+          yq eval ".image.repository = \"queensley/my-go-app\"" -i values.yaml
+          yq eval ".image.tag = \"${{ env.SHORT_SHA }}\"" -i values.yaml
+
+      - name: View updated values.yaml
+        run: cat helm/my-go-app-chart/values.yaml
 
       - name: Commit and push updated values
         run: |
