@@ -33,7 +33,6 @@ jobs:
     name: Build and Push Docker Image
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -49,33 +48,29 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ github.sha::7 }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ github.sha }}
 
   deploy:
     name: Update Helm Values
     needs: push
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.TOKEN }}
 
-      - name: Install yq
-        run: sudo apt-get install -y yq
-
       - name: Update Helm values
         run: |
           cd helm
           cd my-go-app-chart
           yq eval '.image.repository = "${{ secrets.DOCKERHUB_USERNAME }}/my-go-app"' -i values.yaml
-          yq eval '.image.tag = "${{ github.sha::7 }}"' -i values.yaml
+          yq eval '.image.tag = "${{ github.sha }}"' -i values.yaml
 
       - name: Commit and push updated values
         run: |
           git config --global user.name 'queensley200'
           git config --global user.email 'kissesndhuggz@gmail.com'
           git add helm/my-go-app-chart/values.yaml
-          git commit -m "Update image tag to ${{ github.sha::7 }}"
+          git commit -m "Update image tag to ${{ github.sha }}"
           git push
