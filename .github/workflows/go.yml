@@ -71,7 +71,7 @@ jobs:
       - name: Update Helm values
         run: |
           cd helm/my-go-app-chart
-          yq eval '.image.repository = "${{ secrets.DOCKERHUB_USERNAME }}/my-go-app"' -i values.yaml
+          yq eval '.image.repository = "queensley/my-go-app"' -i values.yaml
           yq eval '.image.tag = "${{ env.SHORT_SHA }}"' -i values.yaml
 
       - name: Commit and push updated values
