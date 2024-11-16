@@ -75,6 +75,7 @@ jobs:
         run: |
           git config --global user.name 'queensley200'
           git config --global user.email 'kissesndhuggz@gmail.com'
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           git add helm/my-go-app-chart/values.yaml
-          git commit -m "Update image tag to ${{ github.sha.substr(0, 7) }}"
+          git commit -m "Update image tag to $SHORT_SHA"
           git push
