@@ -3,7 +3,7 @@ replicaCount: 2
 
 image:
   repository: queensley/my-go-app
-  tag: "ebba2e7"
+  tag: "11872554350"
   pullPolicy: Always
 
 
