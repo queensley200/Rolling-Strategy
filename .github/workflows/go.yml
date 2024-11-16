@@ -48,7 +48,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:${{ github.sha.substr(0, 7) }}
+             ${{ secrets.DOCKERHUB_USERNAME }}/my-go-app:$(echo $GITHUB_SHA | cut -c1-7)
           build-args: --no-cache
 
   deploy:
@@ -69,7 +69,7 @@ jobs:
           cd helm
           cd my-go-app-chart
           yq eval '.image.repository = "${{ secrets.DOCKERHUB_USERNAME }}/my-go-app"' -i values.yaml
-          yq eval '.image.tag = "${{ github.sha.substr(0, 7) }}"' -i values.yaml
+          yq eval '.image.tag = "\"$SHORT_SHA\"" -i values.yaml
 
       - name: Commit and push updated values
         run: |
