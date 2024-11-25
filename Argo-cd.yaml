@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-go-application
+  namespace: argocd # Namespace where Argo CD is installed
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/queensley200/Rolling-Strategy.git' # Your repo URL
+    path: helm/my-go-app # Path to the Helm chart or Kubernetes manifests
+    targetRevision: HEAD # Branch, tag, or commit
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: my-go-app # Namespace where app resources will be deployed
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: "5s"
+        factor: 2
+        maxDuration: "3m"
